@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Unwrapped Codebase Documentation</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d1117; color: #e6edf3; margin: 0; padding: 2rem; }
+    h1, h2, h3 { color: #e2b340; }
+    a { color: #58a6ff; }
+    code, pre { background: #161b22; color: #e6edf3; border-radius: 4px; padding: 2px 6px; }
+    pre { padding: 12px; overflow-x: auto; }
+    .section { margin-bottom: 2.5rem; }
+    ul { margin-bottom: 1rem; }
+    .toc { background: #161b22; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
+    .toc ul { margin: 0; }
+  </style>
+</head>
+<body>
+  <h1>Spotify Unwrapped Codebase Documentation</h1>
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#overview">Project Overview</a></li>
+      <li><a href="#structure">File & Folder Structure</a></li>
+      <li><a href="#jsfiles">JavaScript File Details</a></li>
+      <li><a href="#views">How Views Work</a></li>
+      <li><a href="#sidepanel">Side Panel & DOM Updates</a></li>
+      <li><a href="#charts">Adding & Editing Charts</a></li>
+      <li><a href="#addview">How to Add a New View</a></li>
+      <li><a href="#contribute">Contributing & Extending</a></li>
+    </ul>
+  </div>
+
+  <div class="section" id="overview">
+    <h2>Project Overview</h2>
+    <p>This project visualizes your Spotify streaming history using D3.js. It supports multiple views (Overview, Year Deep Dive, Artist Deep Dive), interactive charts, and a side-panel for details and playback. Data can be loaded from cached files or uploaded by the user.</p>
+  </div>
+
+  <div class="section" id="structure">
+    <h2>File & Folder Structure</h2>
+    <ul>
+      <li><b>index.html</b> — Main HTML file, contains the app layout and modal for data upload.</li>
+      <li><b>main.js</b> — App entry point, manages state, view switching, and event listeners.</li>
+      <li><b>charts.js</b> — All chart rendering logic (bar, pie, timeline, heatmap, etc) using D3.js.</li>
+      <li><b>data.js</b> — Data loading, parsing, and aggregation utilities.</li>
+      <li><b>styles.css</b> — App and modal styling.</li>
+      <li><b>data/</b> — Folder for streaming history JSON files.</li>
+      <li><b>README.md</b> — Project summary and quickstart.</li>
+      <li><b>blog.md</b> — (Optional) Blog or notes.</li>
+      <li><b>docs.html</b> — <i>(This file)</i> Full documentation for contributors.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="jsfiles">
+    <h2>JavaScript File Details</h2>
+    <h3>main.js</h3>
+    <ul>
+      <li>Defines global <code>state</code> (records, view, config).</li>
+      <li>Initializes UI elements and event listeners.</li>
+      <li>Handles data loading (from cache or user upload via modal).</li>
+      <li>Controls view switching and triggers chart rendering.</li>
+      <li>Updates the side-panel with artist/track/album details.</li>
+    </ul>
+    <h3>charts.js</h3>
+    <ul>
+      <li>Exports chart rendering functions: <code>renderBarChart</code>, <code>renderAlbumPie</code>, <code>renderTimeline</code>, <code>renderHeatmap</code>.</li>
+      <li>Uses D3.js for all SVG charting and tooltips.</li>
+      <li>Handles chart-specific interactivity (hover, click, zoom, etc).</li>
+    </ul>
+    <h3>data.js</h3>
+    <ul>
+      <li>Handles loading of JSON files (either from <code>data/</code> or user upload).</li>
+      <li>Provides aggregation utilities for artists, albums, tracks, and years.</li>
+      <li>Ensures all records are parsed and filtered for valid data.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="views">
+    <h2>How Views Work</h2>
+    <ul>
+      <li>Views are controlled by the <code>state.view</code> variable (<code>overview</code>, <code>yearDeepDive</code>, <code>artistDeepDive</code>).</li>
+      <li>Switching views updates <code>body[data-view]</code> (CSS shows/hides relevant controls and containers).</li>
+      <li>Each view has a render function (<code>renderOverview</code>, <code>renderYearDeepDive</code>, <code>renderArtistDeepDive</code>).</li>
+      <li>DOM containers for each view are shown/hidden as needed to avoid ghost content.</li>
+      <li>Charts are rendered into their respective containers using D3.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="sidepanel">
+    <h2>Side Panel & DOM Updates</h2>
+    <ul>
+      <li>The side-panel (<code>#artistInfo</code>) is updated by <code>showArtistDetails</code> or <code>window.updateArtistWeekDetails</code>.</li>
+      <li>Details include artist, album pie chart, top tracks, and (optionally) a heatmap.</li>
+      <li>Track links in the side-panel are clickable and will play the track in the sticky Spotify player.</li>
+      <li>When a new view is loaded, the side-panel is cleared and repopulated.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="charts">
+    <h2>Adding & Editing Charts</h2>
+    <ul>
+      <li>All charts are rendered via functions in <code>charts.js</code> and use D3.js.</li>
+      <li>To add a new chart, export a new function (e.g., <code>renderMyChart(containerId, data, ...)</code>).</li>
+      <li>Charts should clear their container before rendering (see <code>container.selectAll('*').remove()</code>).</li>
+      <li>Use D3 for axes, tooltips, and interactivity. Follow the style and color conventions in <code>styles.css</code>.</li>
+      <li>Call your chart function from the appropriate view render function in <code>main.js</code>.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="addview">
+    <h2>How to Add a New View</h2>
+    <ol>
+      <li>Add a new option to the <code>#viewSelect</code> dropdown in <b>index.html</b>.</li>
+      <li>Add a new container <code>&lt;div&gt;</code> for your view in <b>index.html</b> (e.g., <code>id="myViewContainer"</code>).</li>
+      <li>In <b>main.js</b>:
+        <ul>
+          <li>Add a new case to <code>switchView</code> and <code>updateView</code> to handle your view.</li>
+          <li>Write a <code>renderMyView()</code> function to render your view and call your chart(s).</li>
+          <li>Show/hide containers as needed to avoid ghost content.</li>
+        </ul>
+      </li>
+      <li>Update <b>styles.css</b> if your view needs custom styling.</li>
+      <li>Test switching between views and ensure DOM is properly loaded/unloaded.</li>
+    </ol>
+  </div>
+
+  <div class="section" id="contribute">
+    <h2>Contributing & Extending</h2>
+    <ul>
+      <li>Keep code modular: add new charts and views as separate functions.</li>
+      <li>Follow the D3.js and CSS conventions used in the project.</li>
+      <li>Document new functions and views with comments.</li>
+      <li>Test all new features for usability and cross-browser compatibility.</li>
+      <li>For major changes, update this documentation (<b>docs.html</b>).</li>
+    </ul>
+    <h3>Contact</h3>
+    <p>For questions or contributions, open an issue or pull request on the project repository.</p>
+  </div>
+</body>
+</html>
