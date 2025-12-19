@@ -1,7 +1,9 @@
 // data.js
 
 const FILES = [
-  'data/cleaned_spotify_data.json',
+  'data/cleaned_spotify_data_1.json',
+  'data/cleaned_spotify_data_2.json',
+  'data/cleaned_spotify_data_3.json',
 ];
 
 export async function loadAllData(statusCallback) {
