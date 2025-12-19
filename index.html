@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Spotify Streaming History — D3 Visualizer</title>
   <link rel="stylesheet" href="styles.css">
   </head>
@@ -97,11 +97,44 @@
     </div>
 
     <aside id="details">
+      <button id="toggleSidePanel" aria-label="Show/hide details" style="display:none;margin-bottom:8px;">Show Details</button>
       <h2>Details</h2>
       <div id="artistInfo">
         <p class="placeholder">Select an artist or bar to view details.</p>
       </div>
     </aside>
+    <script>
+      // Mobile sidepanel toggle logic
+      function updateSidePanelToggle() {
+        const aside = document.getElementById('details');
+        const btn = document.getElementById('toggleSidePanel');
+        if (window.innerWidth <= 900) {
+          btn.style.display = '';
+          if (!aside.classList.contains('collapsed')) {
+            aside.classList.add('collapsed');
+            btn.textContent = 'Show Details';
+          }
+        } else {
+          btn.style.display = 'none';
+          aside.classList.remove('collapsed');
+        }
+      }
+      window.addEventListener('resize', updateSidePanelToggle);
+      window.addEventListener('DOMContentLoaded', updateSidePanelToggle);
+      document.addEventListener('DOMContentLoaded', function() {
+        const aside = document.getElementById('details');
+        const btn = document.getElementById('toggleSidePanel');
+        btn.addEventListener('click', function() {
+          if (aside.classList.contains('collapsed')) {
+            aside.classList.remove('collapsed');
+            btn.textContent = 'Hide Details';
+          } else {
+            aside.classList.add('collapsed');
+            btn.textContent = 'Show Details';
+          }
+        });
+      });
+    </script>
   </main>
 
   <footer>
