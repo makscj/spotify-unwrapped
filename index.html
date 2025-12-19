@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Spotify Streaming History — D3 Visualizer</title>
+  <link rel="stylesheet" href="styles.css">
+  </head>
+<body data-view="overview">
+  <header>
+    <div class="header-left">
+      <h1>Spotify Streaming History — D3 Visualizer</h1>
+      <p>Filter by year range and search artists. Serve this folder over HTTP.</p>
+    </div>
+    <div id="stickyPlayer">
+      <div class="player-placeholder">Select a song to play...</div>
+    </div>
+  </header>
+
+  <section id="controls">
+    <label>View: 
+      <select id="viewSelect">
+        <option value="overview">Overview</option>
+        <option value="yearDeepDive">Year Deep Dive</option>
+        <option value="artistDeepDive">Artist Deep Dive</option>
+      </select>
+    </label>
+
+    <div class="control-group show-overview">
+      <label>Start: <select id="startYear"></select></label>
+      <label>End: <select id="endYear"></select></label>
+      <label>Top N: <input id="topN" type="number" min="5" max="200" value="25"></label>
+      <label style="position:relative;">
+        <input type="checkbox" id="useAdjusted">
+        Adj. Hours
+        <span class="adj-tooltip" style="visibility:hidden;opacity:0;transition:opacity 0.2s;position:absolute;left:110%;top:50%;transform:translateY(-50%);background:#23272e;color:#e6edf3;padding:8px 12px;border-radius:6px;font-size:0.95em;box-shadow:0 2px 8px #0008;z-index:10;width:260px;">
+          <b>Adjusted Hours</b> reformulates hours listened by down-weighting older listens. This helps highlight your more recent listening habits and trends, rather than being dominated by older data. Toggle to see your current favorites!
+        </span>
+      </label>
+      <script>
+        // Show/hide tooltip on hover
+        const adjLabel = document.querySelector('label[for="useAdjusted"]') || document.querySelector('#useAdjusted').parentElement;
+        const adjTooltip = adjLabel.querySelector('.adj-tooltip');
+        adjLabel.addEventListener('mouseenter', () => { adjTooltip.style.visibility = 'visible'; adjTooltip.style.opacity = '1'; });
+        adjLabel.addEventListener('mouseleave', () => { adjTooltip.style.visibility = 'hidden'; adjTooltip.style.opacity = '0'; });
+      </script>
+    </div>
+
+    <div class="control-group show-yearDeepDive">
+      <label>Year: <select id="deepYear"></select></label>
+      <label>Sort by:
+        <select id="deepDiveSort">
+          <option value="hours">Hours Listened</option>
+          <option value="plays">Total Song Plays</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="control-group show-overview show-artistDeepDive">
+      <label>Search: <input id="artistSearch" type="search" placeholder="Artist name..."></label>
+      <button id="updateBtn">Update</button>
+    </div>
+
+    <span id="status"></span>
+  </section>
+
+  <div id="dataModal" class="modal" style="display:none">
+    <div class="modal-content">
+      <h2>Upload Your Spotify Streaming History</h2>
+      <p>To use your own data, request your <b>Extended Streaming History</b> from <a href="https://www.spotify.com/account/privacy/" target="_blank">Spotify's Privacy page</a>.<br>
+      Once you receive your data, unzip the folder and upload all <b>Streaming_History_Audio*.json</b> files below.</p>
+      <input type="file" id="fileInput" webkitdirectory directory multiple accept="application/json">
+      <div id="modalStatus" style="margin:10px 0;color:#e2b340"></div>
+      <button id="modalLoadBtn">Load Data</button>
+    </div>
+  </div>
+  <main>
+    <div id="chartArea">
+      <svg id="overviewChart"></svg>
+      <div id="deepViewContainer" style="display:none">
+        <div id="yearDeepDiveColumns" style="display: flex; gap: 16px;">
+          <div class="deep-dive-col" id="topArtistsCol">
+            <h3>Top Artists</h3>
+            <ul id="topArtistsList" class="deep-list"></ul>
+          </div>
+          <div class="deep-dive-col" id="topAlbumsCol">
+            <h3>Top Albums</h3>
+            <ul id="topAlbumsList" class="deep-list"></ul>
+          </div>
+          <div class="deep-dive-col" id="topSongsCol">
+            <h3>Top Songs</h3>
+            <ul id="topSongsList" class="deep-list"></ul>
+          </div>
+        </div>
+      </div>
+      <div id="artistTimelineContainer" style="display:none"></div>
+    </div>
+
+    <aside id="details">
+      <h2>Details</h2>
+      <div id="artistInfo">
+        <p class="placeholder">Select an artist or bar to view details.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <small>Visualizer — uses D3.js</small>
+  </footer>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
