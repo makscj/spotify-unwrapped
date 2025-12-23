@@ -257,7 +257,7 @@ function populateYearSelects() {
   els.deepYear.innerHTML = opts.join('');
   
   // Defaults
-  els.startYear.value = minYear;
+  els.startYear.value = maxYear - 2;
   els.endYear.value = maxYear;
   els.deepYear.value = maxYear;
 }
